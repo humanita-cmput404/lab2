@@ -1,7 +1,5 @@
 import socket, time
 
-from example_code.echo_server import BUFFER_SIZE
-
 HOST = ''
 PORT = 8001
 BUFFER_SIZE = 1024

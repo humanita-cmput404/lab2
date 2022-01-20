@@ -1,5 +1,6 @@
 import socket, time, sys
 
+
 def get_remote_ip(host):
     try:
         ip = socket.gethostbyname(host)
@@ -12,20 +13,21 @@ def get_remote_ip(host):
 
 def main():
     host = 'www.google.com'
-    port = 8000
+    port = 54236
     buffer_size = 1024
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as proxy_start:
-    
+        print('Starting proxy server')
         proxy_start.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         
         #bind socket to address
-        proxy_start.bind((host, port))
+        proxy_start.bind(('', port))
         #set to listening mode
         proxy_start.listen(2)
         
         #continuously listen for connections
         while True:
+            print("Waiting to accept...")
             conn, addr = proxy_start.accept()
             print("Connected by", addr)
 
@@ -33,8 +35,8 @@ def main():
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as proxy_end:
                 ip = get_remote_ip(host)
 
-                proxy_end.connect((ip, port))
-
+                proxy_end.connect((ip, 80)) #FIXME
+                print('Connected')
                 # send_full data is already a byte string
                 send_full_data = conn.recv(buffer_size)
                 print(f'Sending received data {send_full_data} to google')
@@ -48,12 +50,6 @@ def main():
                 conn.send(data)
             
             conn.close()
-
-            #recieve data, wait a bit, then send it back
-            # full_data = conn.recv(buffer_size)
-            # time.sleep(0.5)
-            # conn.sendall(full_data)
-            # conn.close()
 
     return 
 
